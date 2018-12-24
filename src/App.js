@@ -8,23 +8,24 @@ import FaceRecognition from './components/FaceRecognition/faceRecognition';
 import SignIn from './components/SignIn/signIn';
 import Register from './components/Register/register';
 import Particles from 'react-particles-js';
+import particleJSON from './particlesjs-config.json';
 
-const particleOptions={
+/*const particleOptions={
   particles: {
    number : {
-    value : 30,
+    value : 40,
     density : {
       enable : true,
-      value_area: 800
+      value_area: 700
     }
   }
 }
-}
+}*/
 
 const initialState= {
      imageUrl:'',
      submit:'',
-     box:{},
+     box:[],
      route:'signIn',
      isSignedIn : false,
      isRegister : false,
@@ -33,15 +34,18 @@ const initialState= {
     name : '',
     email : '',
     entries : 0,
-    joined : ''
+    joined : '',
+    imgErrorMsg: ''
      }
    }
+const APP_FACE_RECOGNITION_DETECT_ERROR='Unable to detect a face. Please try again with some other picture.'
 
 class App extends Component {
 
   constructor(){
     super();
     this.state=initialState;
+    this.onRouteChange=this.onRouteChange.bind(this);
    
  }
 
@@ -54,7 +58,6 @@ class App extends Component {
     entries : data.entries,
     joined : data.joined}
  })
-  console.log('loadUser',this.state.user);
 }
 
   /*componentDidMount(){
@@ -64,14 +67,12 @@ fetch('http://localhost:3001')
 }*/
 
 onInputChange= (event) =>{
-  this.setState({imageUrl:event.target.value});
+  this.setState({imageUrl:event.target.value, box:[],imgErrorMsg:''});
 }
 
 
 onButtonSubmit= () =>{
-  this.setState({submit:this.state.imageUrl},() => {
-
-  });
+  this.setState({submit:this.state.imageUrl});
   fetch('https://whispering-tor-15137.herokuapp.com/imageUrl',{
       method : 'post',
       headers : {'Content-Type' : 'application/json'},
@@ -105,58 +106,65 @@ onButtonSubmit= () =>{
 
    .catch(console.log)     
     }
-    this.displayFaceBox(this.calculateFaceLocation(response))
+    this.displayFaceBox(this.calculateFaceLocation(response));
   })
   .catch(err => console.error(err));
 
 }
 
 calculateFaceLocation=(data)=>{
-  const bounding_box = data.outputs[0].data.regions[0].region_info.bounding_box;
+  if(data.outputs===undefined || data.outputs[0].data.regions===undefined){
+    return this.setState({imgErrorMsg:APP_FACE_RECOGNITION_DETECT_ERROR})
+  }
+  const boxes= data.outputs[0].data.regions.map(region =>{
+  const bounding_box = region.region_info.bounding_box;
   const image  = document.getElementById('inputImage');
   const width = Number(image.width);
   const height =  Number(image.height);
-  console.log(width , height);
   return{
     leftCol : bounding_box.left_col * width,
     topRow : bounding_box.top_row * height,
     rightCol : width - (bounding_box.right_col * width),
     bottomRow : height - (bounding_box.bottom_row * height)
   }
+});
+  return boxes;
 }
 
 displayFaceBox = (dimensions)=>{
-  console.log(dimensions);
   this.setState({box:dimensions});
 }
 
-onRouteChange=(route)=>{
- console.log(this.state.route);
- if(route==='signOut' || route==='register'){
-  this.setState(initialState);
+onRouteChange=(newRoute)=>{
+ if(newRoute==='signOut' || newRoute==='register' ||(newRoute==='signIn' && !this.state.isSignedIn)){
+  this.setState(Object.assign(initialState,{route:newRoute}));
 }
 else{
-  this.setState({isSignedIn:true});
+  this.setState({isSignedIn:true, route:newRoute});
 }
-this.setState({route:route});
+/*this.setState({route:newRoute});*/
 }
+
 render() {
   const {isSignedIn, imageUrl, route, box} = this.state;
   return (
     <div className="App">
-    <Particles className='particles' params={particleOptions} />
-    <Navigation isSignedIn={isSignedIn} routeChange={this.onRouteChange}/>
+    <Particles className='particles' params={particleJSON} />
+
+    <Navigation isSignedIn={isSignedIn} routeChange={this.onRouteChange} route={route}/>
     {route === 'home' ?
     <div>
     <LogoBrain />
     <Rank userInfo={this.state.user}/>
-    <ImageLinkForm inputChange={this.onInputChange} buttonClick={this.onButtonSubmit}/>
-    <FaceRecognition url={imageUrl} box={box}/>
+    <ImageLinkForm error={this.state.imgErrorMsg} inputChange={this.onInputChange} buttonClick={this.onButtonSubmit}/>
+    <FaceRecognition url={imageUrl} box={box} error={this.state.imgErrorMsg}/>
     </div>
     : (
       route === 'signIn' || route === 'signOut'
-      ? <div><SignIn loadUser={this.loadUser} routeChange={this.onRouteChange} /></div>
-      :<div><Register loadUser={this.loadUser} routeChange={this.onRouteChange} /></div>
+      ? <div className='welcomePage'>
+      <SignIn loadUser={this.loadUser} routeChange={this.onRouteChange} />
+      </div>
+      :<div className='welcomePage'><Register loadUser={this.loadUser} routeChange={this.onRouteChange} /></div>
       )
   }
   </div>

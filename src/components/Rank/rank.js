@@ -5,13 +5,15 @@ class Rank extends Component {
 	render() {
 		const {name,entries} = this.props.userInfo;
 		return (
-			<div className="center">
+			
 			<div className="center" style={{color:'white'}} >
-			<h2 ><em>{`${name}, your current rank is`}</em></h2><br/>
-            <h1>{`# ${entries}`}</h1>
+
+			<h3 ><em>{`${name}, your image detection rank is`}</em></h3><br/>
+            <span className="badge"><h2>{`# ${entries}`}</h2></span>
+            <br/>
 			</div>
 
-			</div>
+			
 			)}
 	}
 

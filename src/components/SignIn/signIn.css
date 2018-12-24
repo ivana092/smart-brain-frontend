@@ -1,0 +1,11 @@
+.error {
+ color: rgba(256,0,0,0.6);
+ font-weight: bold;
+ font-style: italic;
+ display: inline-block;
+}
+
+.glyphicon-exclamation-sign{
+	color: rgba(256,0,0,0.6);
+}
+

@@ -6,10 +6,12 @@ import icon from './bulb.png';
 class LogoBrain extends Component {
 	render() {
 		return (
-			<div style={{display:'flex', justifyContent:'flex-start', padding: '10px', width:'100px'}}>
-			<Tilt className="Tilt" options={{ max : 40 }} style={{ height: 100, width: 100 }} >
-			<div className="Tilt-inner"> 
-<img src={icon} alt="icon loading" />
+			<div className='ma4 mt0'>
+			<Tilt className="Tilt br2 shadow-2" 
+			options={{ max : 55 }} style={{ height: 100, width: 100, background: 'linear-gradient(to right, rgba(255, 128, 128, 0.5), rgba(0, 128, 128, 0.3))'}} 
+			>
+			<div className="Tilt-inner pa3"> 
+<img src={icon} alt="bulb icon" />
 			</div>
 			</Tilt>
 			</div>

@@ -10,15 +10,33 @@
 }
 
 .input{
-	background: orange;
 	padding:10px;
 }
 .button{
-	background-color: green;
-	width:  60px;
+	
+	width:  65px;
 	padding: 10px;
 	cursor: pointer;
 
+}
+
+.patternBehind{
+  /*https://futureoflife.org/wp-content/uploads/2015/11/artificial_intelligence_benefits_risk.jpg?x40372*/
+  background-image: url(https://vignette.wikia.nocookie.net/merteens/images/4/42/Artificial-Intelligence.jpg/revision/latest?cb=20151230235236);
+  background-size: cover;
+  padding : 40px;
+  height:500 px;
+}
+
+.error {
+ color: rgba(256,0,0,0.6);
+ font-weight: bold;
+ font-style: italic;
+ display: inline-block;
+}
+
+.glyphicon-exclamation-sign{
+  color: rgba(256,0,0,0.6);
 }
 
 .pattern{
