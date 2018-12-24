@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './register.css';
-import {EMAIL_BLANK, EMAIL_INVALID, PASSWORD_BLANK, PASSWORD_INSUFFICIENT_LENGTH, NAME_BLANK} from './labels.js';
+import {EMAIL_BLANK, EMAIL_INVALID, PASSWORD_BLANK, PASSWORD_INSUFFICIENT_LENGTH, NAME_BLANK, MANDATORY_FIELDS_MISSING} from './labels.js';
 
 class Register extends Component {
   constructor(props){
@@ -11,7 +11,8 @@ class Register extends Component {
       password : '',
       emailErrorMsg: '',
       passwordErrorMsg: '',
-      nameErrorMsg:''
+      nameErrorMsg:'',
+      registerErrMsg: '',
     }
   }
 
@@ -74,16 +75,21 @@ onSubmitRegister = () =>
   })
   .then(response => response.json())
   .then(user =>{
+    console.log("user",user);
     if(user.id){
       this.props.loadUser(user);
       this.props.routeChange('home');
+    }
+    else{
+      // mandatory fields missing json error
+      this.setState({registerErrMsg: MANDATORY_FIELDS_MISSING});
     }
   })
 }
 
 render() {
 	return (
-   
+
    <article className="br3 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
    <main className="pa4 black-80">
    <div className="measure center">
@@ -126,9 +132,10 @@ render() {
    <span className="help-block" style={{color:'wheat'}}>By clicking on the button below, you agree to the Cookie Policy.</span>
    <input onClick={this.onSubmitRegister}
    className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f8 dib" type="submit" value="Let's get Started!" />
-   
    </div>
-   
+   {this.state.registerErrMsg!=='' ?<div>
+   <i className="f3 glyphicon glyphicon-exclamation-sign"></i><span className="error">{this.state.registerErrMsg}</span>
+   </div> : ''}
    </div>
    </main>
    </article>
